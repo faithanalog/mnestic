@@ -18,8 +18,11 @@ configure:
     - set targets =
         array of
             {
-                process: name of process associated with dirs. dirs will sync after process exits
-                directories: list of directories to sync. use `home .. "path"` for $HOME/path
+                process = name of process associated with dirs. dirs will sync
+                after process exits
+
+                directories = list of directories to sync. use `home .. "path"`
+                for $HOME/path
             }
 
 run:
