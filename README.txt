@@ -10,6 +10,7 @@ no support provided. may cause data loss
 install:
     - luarocks install subproc luaposix
     - ensure commands: rsync, pgrep, ln, date
+    - optional: install notify-send
 
 configure:
     - edit mnestic.lua

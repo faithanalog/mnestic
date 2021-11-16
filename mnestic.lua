@@ -8,8 +8,6 @@
 local subproc = require('subproc')
 local posix = require('posix')
 
--- en
-
 local home = os.getenv("HOME")
 if home == nil then
     print "Error: no home directory set."
@@ -22,6 +20,13 @@ local ramfs_root = "/ram/mnestic"
 -- persistent storage
 local mnestic_root = home .. '/.mnestic'
 
+local _, _, notify_send_exists = subproc('which', 'notify-send')
+local function notify(msg)
+    if notify_send_exists == 0 then
+        -- comment out to disable notifications
+        subproc('notify-send', '[mnestic] ' .. msg)
+    end
+end
 
 local targets = {
     {
@@ -36,6 +41,12 @@ local targets = {
         directories = {
             home .. "/.moonchild productions/pale moon",
             home .. "/.cache/moonchild productions/pale moon"
+        }
+    },
+    {
+        process = "weechat",
+        directories = {
+            home .. "/.weechat"
         }
     }
 }
@@ -69,8 +80,9 @@ local function correct_rsync(src, dst)
     if dst:sub(-1) ~= '/' then
         dst = dst .. '/'
     end
-    return subproc('rsync', '-a', src, dst)
+    return subproc('rsync', '-a', '--delete-after', src, dst)
 end
+
 
 
 
@@ -123,6 +135,7 @@ local function checkpoint()
                     print(date)
                     date_printed = true
                 end
+                notify("syncing " .. target.process)
                 for _, dir in ipairs(target.directories) do
                     print("Syncing " .. dir)
                     correct_rsync(ramfs_root .. dir, mnestic_root .. dir)
@@ -134,6 +147,7 @@ local function checkpoint()
     end
     if date_printed then
         print("Sync done")
+        notify("sync done")
     end
 end
 
@@ -141,7 +155,7 @@ print "Entering persistence loop"
 local function main_loop()
     while true do
         checkpoint()
-        posix.sleep(60)
+        posix.sleep(10)
     end
 end
 
