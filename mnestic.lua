@@ -87,6 +87,7 @@ end
 
 
 print "Launching mnestic daemon"
+notify("launching")
 
 print "Creating missing targets directories"
 for _, target in ipairs(targets) do
